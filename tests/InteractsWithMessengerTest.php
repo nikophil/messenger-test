@@ -391,7 +391,6 @@ final class InteractsWithMessengerTest extends WebTestCase
         $this->assertCount(0, $this->messenger()->rejected());
 
         $this->messenger()->process();
-
         $this->assertCount(0, $this->messenger()->queue());
         $this->assertCount(2, $this->messenger()->dispatched());
         $this->assertCount(1, $this->messenger()->acknowledged());
