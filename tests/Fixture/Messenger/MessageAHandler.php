@@ -19,11 +19,13 @@ final class MessageAHandler
     /** @var MessageA[] */
     public array $messages = [];
 
-    public function __invoke(MessageA $message): void
+    public function __invoke(MessageA $message, string|null $additionalArgument = null): void
     {
         if ($message->fail) {
             throw new \RuntimeException('handling failed...');
         }
+
+        $message->additionalArgument = $additionalArgument;
 
         $this->messages[] = $message;
     }

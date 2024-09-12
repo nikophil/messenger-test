@@ -18,6 +18,8 @@ final class MessageA
 {
     public bool $fail;
 
+    public string|null $additionalArgument = null;
+
     public function __construct(bool $fail = false)
     {
         $this->fail = $fail;

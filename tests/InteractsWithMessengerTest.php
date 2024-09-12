@@ -19,6 +19,7 @@ use Symfony\Component\Messenger\Envelope;
 use Symfony\Component\Messenger\Event\WorkerMessageHandledEvent;
 use Symfony\Component\Messenger\MessageBusInterface;
 use Symfony\Component\Messenger\Stamp\DelayStamp;
+use Symfony\Component\Messenger\Stamp\HandlerArgumentsStamp;
 use Symfony\Component\Messenger\Stamp\SerializerStamp;
 use Symfony\Component\Messenger\Transport\Serialization\PhpSerializer;
 use Zenstruck\Assert;
@@ -901,6 +902,27 @@ final class InteractsWithMessengerTest extends WebTestCase
         self::getContainer()->get(MessageBusInterface::class)->dispatch(new MessageA(true));
 
         $this->transport('async')->process()->rejected()->assertContains(MessageA::class, 4);
+    }
+
+    /**
+     * @test
+     */
+    public function can_add_handler_argument(): void
+    {
+        if (!class_exists(HandlerArgumentsStamp::class)) {
+            self::markTestSkipped('Needs symfony/messenger 6.2.');
+        }
+
+        self::bootKernel();
+
+        self::getContainer()->get(MessageBusInterface::class)->dispatch(
+            $message = new MessageA(),
+            [new HandlerArgumentsStamp(['someAdditionalArgument'])]
+        );
+
+        $this->transport('async')->process()->acknowledged()->assertContains(MessageA::class, 1);
+
+        self::assertSame('someAdditionalArgument', $message->additionalArgument);
     }
 
     /**
